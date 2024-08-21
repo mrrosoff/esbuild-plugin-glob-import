@@ -9,6 +9,7 @@ export default function (opts) {
   opts ??= {}
 
   opts.camelCase ??= true
+  opts.removeFileExtension ??= true
   opts.entryPoint ??= 'index.js'
   opts.entryPointMatch ??= arr => arr[arr.length - 1] === opts.entryPoint
 
@@ -19,12 +20,6 @@ export default function (opts) {
       build.onLoad({ filter, namespace }, args => load(args, opts))
     }
   }
-}
-
-function camelCase (filename) {
-  return filename
-    .replace(/\.[^.]+$/, '') // removes extension
-    .replace(/[-_](\w)/g, (match, letter) => letter.toUpperCase())
 }
 
 function resolve (args) {
@@ -76,7 +71,11 @@ function load (args, opts) {
       }
 
       if (opts.camelCase) {
-        key = camelCase(key)
+        key = key.replace(/[-_](\w)/g, (match, letter) => letter.toUpperCase());
+      }
+
+      if (opts.removeFileExtension) {
+        key = key.replace(/\.[^.]+$/, "");
       }
 
       if (i === arr.length - 1) {
